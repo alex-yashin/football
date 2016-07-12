@@ -2,15 +2,12 @@
 (require '[clojure.string :as str])
 
 (defn getWinner [score]
-    (let [[firstTeamResultStr secondTeamResultStr] (str/split score #":")]
-        (let 
-            [firstTeamResult (bigint firstTeamResultStr)
-             secondTeamResult (bigint secondTeamResultStr)]
-            (cond
-                (< firstTeamResult secondTeamResult) :secondTeam
-                (> firstTeamResult secondTeamResult) :draw
-                (= firstTeamResult secondTeamResult) :firstTeam
-            ))))
+    (let [[firstTeamResult secondTeamResult] (map bigint (str/split score #":"))]
+        (cond
+            (< firstTeamResult secondTeamResult) :secondTeam
+            (> firstTeamResult secondTeamResult) :draw
+            (= firstTeamResult secondTeamResult) :firstTeam
+        )))
 
 (defn score [realScore userScore]
     (cond 
