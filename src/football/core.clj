@@ -1,25 +1,26 @@
 (ns football.core)
+(require '[clojure.string :as str])
 
-(defn sign [firstTeamResult secondTeamResult]
-    (cond 
-        (< firstTeamResult secondTeamResult) -1
-        (> firstTeamResult secondTeamResult) 1
-        (= firstTeamResult secondTeamResult) 0))
+(defn getWinner [score]
+    (let [[firstTeamResultStr secondTeamResultStr] (str/split score #":")]
+        (let 
+            [firstTeamResult (bigint firstTeamResultStr)
+             secondTeamResult (bigint secondTeamResultStr)]
+            (cond
+                (< firstTeamResult secondTeamResult) :secondTeam
+                (> firstTeamResult secondTeamResult) :draw
+                (= firstTeamResult secondTeamResult) :firstTeam
+            ))))
 
 (defn score [realScore userScore]
-    (if (= realScore userScore) 
-        2
-        (let [[_ realFirstTeamResult realSecondTeamResult] (re-matches #"(\d+):(\d+)" realScore)
-            [_ userFirstTeamResult userSecondTeamResult] (re-matches #"(\d+):(\d+)" userScore)]
-                (if (= (sign (Integer. realFirstTeamResult) (Integer. realSecondTeamResult)) 
-                       (sign (Integer. userFirstTeamResult) (Integer. userSecondTeamResult))) 
-                            1 0))))
-
+    (cond 
+        (= realScore userScore) 2
+        (= (getWinner realScore) (getWinner userScore)) 1
+        :else 0))
     
 (defn -main [& args]
     (do 
         (println (score "1:2" "1:2"))
         (println (score "1:2" "3:4"))
         (println (score "1:2" "1:3"))
-        (println (score "5:2" "3:4"))
-    ))
+        (println (score "5:2" "3:4"))))
